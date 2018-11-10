@@ -1,0 +1,54 @@
+{
+	"runD":1,
+	"save_as_csv":1,
+	"save_as_kdb":1,
+	"use_csv_or_kdb":"kdb",
+	"ts_api":"dcecb4c7e06d394705fe904ab4b642f1fe0910241c79679c3f30d763",
+	
+	"kdb_get":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+    },
+	
+	"kdb_load":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+	},
+
+	"kdb_save":{
+                "host":"Localhost",
+                "port":5000,
+                "username":"feng",
+                "password":"feng"
+    },
+
+	"place_load":{
+				"kdb":"Local/",
+				"csv":"D:/Quant/Data/CSV/Local/"
+	},
+	
+	"place_save":{
+				"kdb":"Local/",
+				"csv":"D:/Quant/Data/CSV/Local/"
+	},
+	
+	"option_for_price":{
+						"whether_download_price":1,
+						"asset":["E","I"],
+						"adj":["qfq","None","hfq"],
+						"freq":["D"],
+						
+						"products_list_E":1,
+						"products_list_I":1,
+						"products_list_C":0,
+						"products_list_F":0,
+						"products_list_O":0,
+						"start_date":20100101,
+						"end_date":20180930
+	}
+
+}

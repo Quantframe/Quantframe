@@ -1,0 +1,65 @@
+{
+	"runD":1,
+	"save_as_csv":1,
+	"save_as_kdb":1,
+	"use_csv_or_kdb":"kdb",
+	"ts_api":"dcecb4c7e06d394705fe904ab4b642f1fe0910241c79679c3f30d763",
+	
+	"kdb_get":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+    },
+	
+	"kdb_load":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+	},
+
+	"kdb_save":{
+                "host":"Localhost",
+                "port":5000,
+                "username":"feng",
+                "password":"feng"
+    },
+
+	"place_load":{
+				"kdb_root":"D:/Quant/Data/KDB/q/w32/",
+				"kdb":"Local/",
+				"csv":"D:/Quant/Data/CSV/Local/"
+	},
+	
+	"place_save":{
+				"kdb_root":"D:/Quant/Data/KDB/q/w32/",
+				"kdb":"Local/",
+				"csv":"D:/Quant/Data/CSV/Local/"
+	},
+	"files_stored":[
+					"OHLCV_D_E",
+					"OHLCV_D_I"
+	],
+	
+	"HDB_option":{
+				
+				
+				"Equity":{
+						"whether_download":1,
+						"asset":"E",
+						"adj":"None",
+						"freq":["D"],
+						"start_date":20100101
+				},
+				"Index":{
+						"whether_download":1,
+						"asset":"I",
+						"adj":"None",
+						"freq":["D"],
+						"start_date":20100101
+				}
+	},
+	"datetime_name":"date"
+	
+}

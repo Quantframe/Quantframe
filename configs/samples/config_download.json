@@ -1,0 +1,51 @@
+{
+	"runD":1,
+	"save_as_csv":0,
+	"save_as_kdb":1,
+	"use_csv_or_kdb":"kdb",
+	"kdb_get":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+    },
+	
+	"kdb_load":{
+				"host":"Localhost",
+				"port":5000,
+				"username":"feng",
+				"password":"feng"
+	},
+
+	"kdb_save":{
+                "host":"Localhost",
+                "port":5000,
+                "username":"feng",
+                "password":"feng"
+    },
+
+	"place_load":{
+				"kdb":"Local/Stocks/Feng/",
+				"csv":"D:/Quant/Data/CSV/Local/Stocks/Feng/"
+	},
+	
+	"place_save":{
+				"kdb":"Local/Stocks/Feng/",
+				"csv":"D:/Quant/Data/CSV/Local/Stocks/Feng/"
+	},
+	
+	"option_for_price":{
+						"whether_download_price":1,
+						"asset":["E","I","C","F","O"],
+						"adj":["None","qfq","hfq"],
+						"freq":["D","1MIN","5MIN","15MIN","30MIN","60MIN"],
+						"products_list_E":1,   # or ["000001.SZ","000002.SZ"],
+						"products_list_I":1,   # or ["000001.SZ","000002.SZ"]
+						"products_list_C":1,   # or ["000001.SZ","000002.SZ"]
+						"products_list_F":1,   # or ["000001.SZ","000002.SZ"]
+						"products_list_O":1,   # or ["000001.SZ","000002.SZ"]
+						"start_date":20100101,
+						"end_date":20180930
+	}
+
+}
