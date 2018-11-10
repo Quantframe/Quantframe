@@ -37,24 +37,22 @@
 				"kdb":"Local/",
 				"csv":"D:/Quant/Data/CSV/Local/"
 	},
-	"files_stored":[
-					"OHLCV_D_E",
-					"OHLCV_D_I"
-	],
+
 	
-	"HDB_option":{
-				
-				
+	"HDB_option":{	
 				"Equity":{
 						"whether_download":1,
-						"asset":"E",
+						"save_type":["OHLCV"],
+						"asset":["E"],
 						"adj":"None",
 						"freq":["D"],
 						"start_date":20100101
 				},
 				"Index":{
 						"whether_download":1,
-						"asset":"I",
+						"save_type":["OHLCV"],
+						"index_market_list":["MSCI","CSI","SSE","SZSE","CICC","SW","CNI","OTH"],
+						"asset":["I"],
 						"adj":"None",
 						"freq":["D"],
 						"start_date":20100101

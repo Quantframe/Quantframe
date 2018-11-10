@@ -48,6 +48,13 @@ class HDB_Core():
         self.whether_update_KDB = 0
         self.whether_update_CSV = 0
         self.today = pd.to_datetime(dt.date.today())
+        self.config['files_stored'] = []
+        for i in self.config['HDB_option']:
+            for h in self.config['HDB_option'][i]['save_type']:
+                for j in self.config['HDB_option'][i]['freq']:
+                    for k in self.config['HDB_option'][i]['asset']:
+                        name_files_stored = h+'_'+j+'_'+k
+                        self.config['files_stored'].append(name_files_stored)
 
     def get_last_date_of_file(self,file_name,file_type):
         if file_type == 'KDB':

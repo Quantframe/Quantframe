@@ -12,13 +12,15 @@ class ts_api():
         self.config = config_download
         self.api =  ts.pro_api(self.config['ts_api'])
         self.pro_api = self.config['ts_api']
+
     def get_stock_code_list(self,exchange='',list_status='L',fields='ts_code'):
         data = self.api.stock_basic(exchange=exchange, list_status=list_status, fields=fields)
         data = list(data['ts_code'].values)
         return data
 
     def get_index_code_list(self):
-
+        # for i in self
+        pass
     def get_hist_OHLCV(self,ts_code,frequency,asset,adj,start_date,end_date):
         data = ts.pro_bar(
                         pro_api = self.api,
