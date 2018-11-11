@@ -52,13 +52,13 @@
 						"by":"index_name",
 						"save_type":["OHLCV"],
 						"index_market_list":["MSCI","CSI","SSE","SZSE","CICC","SW","CNI","OTH"],
-						"index_name":"000001.SH",
+						"index_name":["000001.SH"],
 						"asset":["I"],
 						"adj":"None",
 						"freq":["D"],
 						"start_date":20100101
 				}
 	},
-	"datetime_name":"date"
+	"datetime_name":"trade_date"
 	
 }

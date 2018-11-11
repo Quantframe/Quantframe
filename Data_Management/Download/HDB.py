@@ -99,8 +99,9 @@ class HDB_Core():
                                             adj=self.config['HDB_option'][download_info[2]]['adj'],
                                             start_date=start_date
                                             )
-            if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ int(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
+            if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
             data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
+            count_steps+=1
         return data_combine
 
     def check_HDB_update(self):

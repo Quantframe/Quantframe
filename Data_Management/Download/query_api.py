@@ -34,13 +34,15 @@ class ts_api():
                         adj=adj,  ## qfq,hfq,None
                         start_date = start_date, ##YYYYMMDD
                         end_date = end_date) #YYYYMMDD
-        data = data.set_index(pd.to_datetime(data['trade_date']))[['ts_code','open','high','low','close','vol','amount']]
+        if data.shape[0] > 0:
+            data = data.set_index(pd.to_datetime(data[self.config['datetime_name']]))[['ts_code','open','high','low','close','vol','amount']]
 
-        data_adj_factor = self.api.adj_factor(
-                                            ts_code=ts_code, ## CODE.TYPE [TYPE: SZ,SH]
-                                            start_date=start_date, ##YYYYMMDD
-                                            end_date=end_date) ##YYYYMMDD
-        data_adj_factor = data_adj_factor.set_index(pd.to_datetime(data_adj_factor['trade_date']))[['adj_factor']]
-        data = pd.merge(data,data_adj_factor,left_index=True,right_index=True,how='outer')
-        return data
+            data_adj_factor = self.api.adj_factor(
+                                                ts_code=ts_code, ## CODE.TYPE [TYPE: SZ,SH]
+                                                start_date=start_date, ##YYYYMMDD
+                                                end_date=end_date) ##YYYYMMDD
+            data_adj_factor = data_adj_factor.set_index(pd.to_datetime(data_adj_factor[self.config['datetime_name']]))[['adj_factor']]
+            data = pd.merge(data,data_adj_factor,left_index=True,right_index=True,how='outer')
+            return data
+        else: print('数据缺失: 代码: '+str(ts_code))
 
