@@ -1,0 +1,5 @@
+有需要帮助或探讨的可以加QQ: 617644591
+
+每天五点后运行Data_Management/Download中的HDB文件可以更新当日股票数据
+
+所有参数均保存在configs文件夹中
