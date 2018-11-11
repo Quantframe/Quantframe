@@ -14,14 +14,18 @@ class ts_api():
         self.pro_api = self.config['ts_api']
 
     def get_stock_code_list(self,exchange='',list_status='L',fields='ts_code'):
-        data = self.api.stock_basic(exchange=exchange, list_status=list_status, fields=fields)
-        data = list(data['ts_code'].values)
-        return data
+        name_list = self.api.stock_basic(exchange=exchange, list_status=list_status, fields=fields)
+        name_list = name_list(data['ts_code'].values)
+        return name_list
 
     def get_index_code_list(self):
-        # for i in self
-        pass
-    def get_hist_OHLCV(self,ts_code,frequency,asset,adj,start_date,end_date):
+        name_list = []
+        for i in self.config['HDB_option']['Index']['index_market_list']:
+            name_sub = list(self.api.index_basic(market=i)['ts_code'])
+            name_list.extend(name_sub)
+        return name_list
+
+    def get_hist_OHLCV(self,ts_code,frequency,asset,adj,start_date,end_date=''):
         data = ts.pro_bar(
                         pro_api = self.api,
                         ts_code = ts_code, ## CODE.TYPE [TYPE: SZ,SH]
