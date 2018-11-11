@@ -3,6 +3,7 @@
 *Back_Testing/
 *Factor_Pool/
 *Visualization/
+*À¬»øÏä/
 *.ipynb
 *.csv
 *.xlsx
