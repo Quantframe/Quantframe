@@ -15,7 +15,7 @@ class ts_api():
 
     def get_stock_code_list(self,exchange='',list_status='L',fields='ts_code'):
         name_list = self.api.stock_basic(exchange=exchange, list_status=list_status, fields=fields)
-        name_list = name_list(data['ts_code'].values)
+        name_list = list(name_list['ts_code'].values)
         return name_list
 
     def get_index_code_list(self):

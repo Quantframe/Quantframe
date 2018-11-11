@@ -78,18 +78,29 @@ class HDB_Core():
     # def download_data(self):
 
     def download_combing(self,download_info,start_date):
-        stock_code_list = ts_api.get_stock_code_list()
+        data_combine = pd.DataFrame()
+        if download_info[2] == 'E':
+            code_list = self.ts_api.get_stock_code_list()
+        elif download_info[2] == 'I':
+            if self.config['HDB_option'][download_info[2]]['by'] == 'index_name':
+                code_list = self.config['HDB_option'][download_info[2]]['index_name']
+            elif self.config['HDB_option'][download_info[2]]['by'] == 'index_market_list':
+                code_list = self.ts_api.get_index_code_list()
+
+
+        if (self.config['runD']): print(dt.datetime.now(), '总下载数：' + str(len(code_list)))
         count_steps = 0
-        for code in stock_code_list:
-            data_sub = ts_api.get_hist_OHLCV(
+        for code in code_list:
+
+            data_sub = self.ts_api.get_hist_OHLCV(
                                             code,
                                             frequency=download_info[1],
                                             asset=download_info[2],
                                             adj=self.config['HDB_option'][download_info[2]]['adj'],
                                             start_date=start_date
                                             )
+            if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ int(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
             data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
-            if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 进度: ' + str(count_steps * 100 / (len(stock_code_list))) + '%;')
         return data_combine
 
     def check_HDB_update(self):
@@ -150,27 +161,25 @@ class HDB_Core():
         if (self.config['runD']): print(dt.datetime.now(), '下载列表：CSV: '+str(self.csv_initial_download_list))
         if (self.config['runD']): print(dt.datetime.now(), '更新列表：KDB: '+str(self.kdb_update_list))
         if (self.config['runD']): print(dt.datetime.now(), '更新列表：CSV: '+str(self.csv_update_list))
-        '''
-        整合下载列表,注册tushare
-        '''
+        #'''
+        #整合下载列表,注册tushare
+        #'''
         self.initial_download_list = set(self.kdb_initial_download_list + self.csv_initial_download_list)
         self.update_list = set(self.kdb_update_list + self.csv_update_list)
-        ts_api = query_api.ts_api(config_download)
-        '''
-        下载HDB
-        '''
-        if set(self.initial_download_list) > 0:
-
+        self.ts_api = query_api.ts_api(self.config)
+        #'''
+        #下载HDB
+        #'''
+        if len(set(self.initial_download_list)) > 0:
             for i in self.initial_download_list:
-                data_combine = pd.DataFrame()
                 download_info = i.split('_')
                 if (self.config['runD']): print(dt.datetime.now(), '开始下载初始数据：文件名: ' + str(i)+'; 文件名分割：'+str(download_info))
                 data_combine = self.download_combing(download_info,self.config['HDB_option'][download_info[2]]['start_date'])
                 kc.save(self.config,i,data_combine)
-        '''
-        更新HDB
-        '''
-        if set(self.update_list) > 0:
+        #'''
+        #更新HDB
+        #'''
+        if len(set(self.update_list)) > 0:
             for i in self.update_list:
                 if (self.config['runD']): print(dt.datetime.now(), '开始更新数据：文件名: ' + str(i))
                 if (self.config['save_as_csv']) & (self.config['save_as_kdb']):############# KDB CSV 都更新
