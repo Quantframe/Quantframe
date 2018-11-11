@@ -50,6 +50,8 @@ class HDB_Core():
         self.today = pd.to_datetime(dt.date.today())
         self.config['files_stored'] = []
         self.last_date_record = dict()
+        self.last_date_record['KDB'] = {}
+        self.last_date_record['CSV'] = {}
         for i in self.config['HDB_option']:
             if self.config['HDB_option'][i]['whether_download']:
                 for h in self.config['HDB_option'][i]['save_type']:
@@ -71,11 +73,8 @@ class HDB_Core():
             self.config['use_csv_or_kdb'] = 'csv'
             data = kc.load(self.config,file_name)
             self.config['use_csv_or_kdb'] = self.save_use_csv_or_kdb
-            last_date_check = pd.to_datetime(data[self.config['datetime_name']].max().date())
-        return last_date_check,check
-    # def check_KDB_CSV_match(self):
-    #     last_date_check_KDB = self.get_last_date_of_file(self,file_name,file_type)
-    # def download_data(self):
+            last_date_check = pd.to_datetime(pd.to_datetime(data[self.config['datetime_name']]).max().date())
+        return last_date_check
 
     def download_combing(self,download_info,start_date):
         data_combine = pd.DataFrame()
@@ -108,6 +107,7 @@ class HDB_Core():
         if self.config['save_as_kdb']:
             if (self.config['runD']): print(dt.datetime.now(), '检查: 是否存在原始KDB文件')
             dir = os.listdir(self.config['place_save']['kdb_root'] + self.config['place_save']['kdb'])
+
             for i in self.config['files_stored']:
                 if i in dir: self.kdb_initial_pass_list.append(i)
                 else: self.kdb_initial_download_list.append(i)
@@ -124,9 +124,12 @@ class HDB_Core():
                 if last_date_check>= self.today:
                     if (self.config['runD']): print(dt.datetime.now(), '检查: KDB文件已经是最新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
                 else:
-                    if (self.config['runD']): print(dt.datetime.now(), '检查: KDB文件需要更新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
-                    self.whether_update_KDB = 1
-                    self.kdb_update_list.append(i)
+                    if ((self.today - last_date_check).days <= 2) & (self.today.weekday() in [5, 6]) & (last_date_check.weekday() == 4):
+                        if (self.config['runD']): print(dt.datetime.now(),'检查: KDB文件已经是最新: ' + str(i) + '; HDB最新日期为最近的周五: ' + str(last_date_check) + '; 当前日期: ' + str(self.today))
+                    else:
+                        if (self.config['runD']): print(dt.datetime.now(), '检查: KDB文件需要更新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
+                        self.whether_update_KDB = 1
+                        self.kdb_update_list.append(i)
 
         else:
             if (self.config['runD']): print(dt.datetime.now(), '检查: 跳过检查原始KDB文件')
@@ -134,6 +137,13 @@ class HDB_Core():
         if self.config['save_as_csv']:
             if (self.config['runD']): print(dt.datetime.now(), '检查: 是否存在原始CSV文件')
             dir = os.listdir(self.config['place_save']['csv'])
+            location = 0
+            for i in dir:
+                item = i.split('.')[0]
+                dir[location] = item
+                location+=1
+
+            print(dir)
             for i in self.config['files_stored']:
                 if i in dir: self.csv_initial_pass_list.append(i)
                 else: self.csv_initial_download_list.append(i)
@@ -150,9 +160,12 @@ class HDB_Core():
                 if last_date_check>= self.today:
                     if (self.config['runD']): print(dt.datetime.now(), '检查: CSV文件已经是最新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
                 else:
-                    if (self.config['runD']): print(dt.datetime.now(), '检查: CSV文件需要更新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
-                    self.whether_update_CSV = 1
-                    self.csv_update_list.append(i)
+                    if ((self.today - last_date_check).days <= 2) & (self.today.weekday() in [5, 6]) & (last_date_check.weekday() == 4):
+                        if (self.config['runD']): print(dt.datetime.now(),'检查: CSV文件已经是最新: ' + str(i) + '; HDB最新日期为最近的周五: ' + str(last_date_check) + '; 当前日期: ' + str(self.today))
+                    else:
+                        if (self.config['runD']): print(dt.datetime.now(), '检查: CSV文件需要更新: '+str(i)+'; HDB最新日期: '+str(last_date_check)+'; 当前日期: '+str(self.today))
+                        self.whether_update_CSV = 1
+                        self.csv_update_list.append(i)
         else:
             if (self.config['runD']): print(dt.datetime.now(), '检查: 跳过检查原始CSV文件')
 
@@ -177,6 +190,8 @@ class HDB_Core():
                 if (self.config['runD']): print(dt.datetime.now(), '开始下载初始数据：文件名: ' + str(i)+'; 文件名分割：'+str(download_info))
                 data_combine = self.download_combing(download_info,self.config['HDB_option'][download_info[2]]['start_date'])
                 kc.save(self.config,i,data_combine)
+        else:
+            if (self.config['runD']): print(dt.datetime.now(), '无数据更新')
         #'''
         #更新HDB
         #'''
@@ -213,6 +228,8 @@ class HDB_Core():
                     update_start_date = str((self.last_date_record['KDB'][i] + dt.timedelta(days=1)).date()).replace('-', '')
                     data_combine = self.download_combing(download_info, update_start_date)
                     kc.update(self.config, update_kdb, update_csv,self.last_date_record, i, data_combine)
+        else:
+            if (self.config['runD']): print(dt.datetime.now(), '无数据更新')
 
 if __name__ == "__main__":
     HDB_Core = HDB_Core(config_download)
