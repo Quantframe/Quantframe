@@ -52,6 +52,8 @@ class HDB_Core():
         self.last_date_record = dict()
         self.last_date_record['KDB'] = {}
         self.last_date_record['CSV'] = {}
+        self.download_intial_on = 0
+        self.update_on = 0
         for i in self.config['HDB_option']:
             if self.config['HDB_option'][i]['whether_download']:
                 for h in self.config['HDB_option'][i]['save_type']:
@@ -77,30 +79,62 @@ class HDB_Core():
         return last_date_check
 
     def download_combing(self,download_info,start_date):
+
         data_combine = pd.DataFrame()
-        if download_info[2] == 'E':
-            code_list = self.ts_api.get_stock_code_list()
-        elif download_info[2] == 'I':
-            if self.config['HDB_option'][download_info[2]]['by'] == 'index_name':
-                code_list = self.config['HDB_option'][download_info[2]]['index_name']
-            elif self.config['HDB_option'][download_info[2]]['by'] == 'index_market_list':
-                code_list = self.ts_api.get_index_code_list()
 
-
-        if (self.config['runD']): print(dt.datetime.now(), '总下载数：' + str(len(code_list)))
         count_steps = 0
-        for code in code_list:
-
-            data_sub = self.ts_api.get_hist_OHLCV(
-                                            code,
-                                            frequency=download_info[1],
-                                            asset=download_info[2],
-                                            adj=self.config['HDB_option'][download_info[2]]['adj'],
-                                            start_date=start_date
-                                            )
-            if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
-            data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
-            count_steps+=1
+        if self.download_intial_on == 1:
+            if download_info[2] == 'E':
+                code_list = self.ts_api.get_stock_code_list()
+            elif download_info[2] == 'I':
+                if self.config['HDB_option'][download_info[2]]['by'] == 'index_name':
+                    code_list = self.config['HDB_option'][download_info[2]]['index_name']
+                elif self.config['HDB_option'][download_info[2]]['by'] == 'index_market_list':
+                    code_list = self.ts_api.get_index_code_list()
+            if (self.config['runD']): print(dt.datetime.now(), '总下载数：' + str(len(code_list)))
+            hist_or_real = 'hist'
+            for code in code_list:
+                if download_info[0] == 'OHLCV':
+                    data_sub = self.ts_api.get_hist_OHLCV(
+                                                        hist_or_real,
+                                                        code,
+                                                        frequency=download_info[1],
+                                                        asset=download_info[2],
+                                                        adj=self.config['HDB_option'][download_info[2]]['adj'],
+                                                        start_date=start_date,
+                                                        trade_date=''
+                                                        )
+                elif download_info[0] == 'Fundamental':
+                    data_sub = self.ts_api.get_fundamental(ts_code=code,start_date=start_date,end_date='')
+                count_steps += 1
+                if (type(data_sub)==pd.core.frame.DataFrame):
+                    if (self.config['runD']): print(dt.datetime.now(), '加载完成：使用代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
+                    data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
+                else:
+                    if (self.config['runD']): print(dt.datetime.now(), '数据缺失：使用代码: ' + str(code) + '; 长度: 无；进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
+        elif self.update_on == 1:
+            hist_or_real = 'real'
+            update_calendar = self.ts_api.get_trading_calandar(start_date)
+            if (self.config['runD']): print(dt.datetime.now(), '总下载数：' + str(len(update_calendar)))
+            for date in update_calendar:
+                if download_info[0] == 'OHLCV':
+                    data_sub = self.ts_api.get_hist_OHLCV(
+                                                    hist_or_real,
+                                                    code='',
+                                                    frequency=download_info[1],
+                                                    asset=download_info[2],
+                                                    adj=self.config['HDB_option'][download_info[2]]['adj'],
+                                                    start_date='',
+                                                    trade_date=date
+                                                    )
+                elif download_info[0] == 'Fundamental':
+                    data_sub = self.ts_api.get_fundamental(ts_code='',trade_date=date)
+                count_steps += 1
+                if (type(data_sub)==pd.core.frame.DataFrame):
+                    if (self.config['runD']): print(dt.datetime.now(), '加载完成：使用日期: ' + str(date) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(update_calendar))) + '%;')
+                    data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
+                else:
+                    if (self.config['runD']): print(dt.datetime.now(), '数据缺失：使用日期: ' + str(date) + '; 长度: 无；进度: ' + str(count_steps * 100 / (len(update_calendar))) + '%;')
         return data_combine
 
     def check_HDB_update(self):
@@ -143,7 +177,6 @@ class HDB_Core():
                 dir[location] = item
                 location+=1
 
-            print(dir)
             for i in self.config['files_stored']:
                 if i in dir: self.csv_initial_pass_list.append(i)
                 else: self.csv_initial_download_list.append(i)
@@ -184,6 +217,7 @@ class HDB_Core():
         #'''
         #下载HDB
         #'''
+        self.download_intial_on = 1
         if len(set(self.initial_download_list)) > 0:
             for i in self.initial_download_list:
                 download_info = i.split('_')
@@ -192,24 +226,27 @@ class HDB_Core():
                 kc.save(self.config,i,data_combine)
         else:
             if (self.config['runD']): print(dt.datetime.now(), '无数据更新')
+        self.download_intial_on = 0
         #'''
         #更新HDB
         #'''
+        self.update_on = 1
         if len(set(self.update_list)) > 0:
             for i in self.update_list:
+                download_info = i.split('_')
                 if (self.config['runD']): print(dt.datetime.now(), '开始更新数据：文件名: ' + str(i))
                 if (self.config['save_as_csv']) & (self.config['save_as_kdb']):############# KDB CSV 都更新
                     update_kdb = 1
                     update_csv = 1
                     if (self.config['runD']): print(dt.datetime.now(), '开始更新数据：KDB和CSV均需要更新，检查两种文件数据是否相符: ' + str(i))
                     if self.last_date_record['KDB'][i] == self.last_date_record['CSV'][i]:
-                        if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期相符')
+                        if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期相符,最后日期: '+str(self.last_date_record['KDB'][i]))
                         update_start_date = str((self.last_date_record['KDB'][i] + dt.timedelta(days=1)).date()).replace('-', '')
                         data_combine = self.download_combing(download_info,update_start_date)
                         kc.update(self.config,update_kdb,update_csv,self.last_date_record,i,data_combine)
                     elif self.last_date_record['KDB'][i] != self.last_date_record['CSV'][i]:
-                        if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期不符')
-                        update_start_date = str((min(self.last_date_record['KDB'][i],self.last_date_record['KDB'][i]) + dt.timedelta(days=1)).date()).replace('-', '')
+                        if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期不符，KDB最后日期：'+str(self.last_date_record['KDB'][i])+'; CSV最后日期: '+str(self.last_date_record['CSV'][i]) )
+                        update_start_date = str((min(self.last_date_record['KDB'][i],self.last_date_record['CSV'][i]) + dt.timedelta(days=1)).date()).replace('-', '')
                         data_combine = self.download_combing(download_info,update_start_date)
                         kc.update(self.config,update_kdb,update_csv,self.last_date_record,i,data_combine)
 
@@ -230,6 +267,7 @@ class HDB_Core():
                     kc.update(self.config, update_kdb, update_csv,self.last_date_record, i, data_combine)
         else:
             if (self.config['runD']): print(dt.datetime.now(), '无数据更新')
+        self.update_on = 0
 
 if __name__ == "__main__":
     HDB_Core = HDB_Core(config_download)

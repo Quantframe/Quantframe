@@ -1,0 +1,7 @@
+
+*.ipynb
+unuseful/ddd.csv
+*.csv
+unuseful/Download.py
+unuseful/Download_Main.py
+unuseful/run_main.py
