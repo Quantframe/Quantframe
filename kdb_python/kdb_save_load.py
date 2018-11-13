@@ -15,9 +15,11 @@ def save_as_kdb(config,
                 data,
                 reset_index = True,
                 set_index = True,
-                index_name='utc_datetime'):
+                index_name='trade_date'):
     
-    if(reset_index): data=data.reset_index()
+    if(reset_index):
+        if index_name in data.columns.tolist(): pass
+        else: data=data.reset_index()
     q=qp.QConnection(config['kdb_save']['host'],
                      config['kdb_save']['port'],
                      config['kdb_save']['username'], 

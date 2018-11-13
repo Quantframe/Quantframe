@@ -30,7 +30,7 @@ class ts_api():
             name_list.extend(name_sub)
         return name_list
 
-    def get_hist_OHLCV(self,hist_or_real,ts_code,frequency,asset,adj,start_date='',end_date='',trade_date=''):
+    def get_hist_OHLCV(self,hist_or_real,ts_code='',frequency='',asset='',adj='',start_date='',end_date='',trade_date=''):
         if hist_or_real == 'hist':
             data = ts.pro_bar(
                             pro_api = self.api,
@@ -57,12 +57,15 @@ class ts_api():
             elif asset == 'I':
                 data = self.api.index_daily(ts_code=ts_code, start_date=start_date, end_date=end_date,trade_date = trade_date)
             if data.shape[0] > 0:
-                data = data.set_index(pd.to_datetime(data[self.config['datetime_name']]))[['ts_code','open','high','low','close','vol','amount']]
+                data = data[[self.config['datetime_name'],'ts_code','open','high','low','close','vol','amount']]
                 data_adj_factor = self.api.adj_factor(
                                                     ts_code=ts_code,  ## CODE.TYPE [TYPE: SZ,SH]
                                                     trade_date=trade_date)  ##YYYYMMDD
-                data_adj_factor = data_adj_factor.set_index(pd.to_datetime(data_adj_factor[self.config['datetime_name']]))[['adj_factor']]
+                data_adj_factor = data_adj_factor[['ts_code','adj_factor']]
                 data = pd.merge(data, data_adj_factor, left_on='ts_code', right_on='ts_code', how='outer')
+                data[self.config['datetime_name']] = pd.to_datetime(data[self.config['datetime_name']])
+                data = data.set_index(self.config['datetime_name'])
+                data = data.dropna()
                 return data
 
             else: print('数据缺失: 代码: ' + str(ts_code))
