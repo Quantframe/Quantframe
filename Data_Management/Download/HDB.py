@@ -108,7 +108,6 @@ class HDB_Core():
                     data_sub = self.ts_api.get_fundamental(ts_code=code,start_date=start_date,end_date='')
                 count_steps += 1
                 if (type(data_sub)==pd.core.frame.DataFrame):
-                    print(data_sub)
                     if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
                     data_combine = pd.concat([data_combine, data_sub], axis=0, ignore_index=False)
                 else:
@@ -252,7 +251,6 @@ class HDB_Core():
                         if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期相符,最后日期: '+str(self.last_date_record['KDB'][i]))
                         update_start_date = str((self.last_date_record['KDB'][i] + dt.timedelta(days=1)).date()).replace('-', '')
                         data_combine = self.download_combing(download_info,update_start_date)
-                        print(data_combine)
                         kc.update(self.config,update_kdb,update_csv,self.last_date_record,i,data_combine)
                     elif self.last_date_record['KDB'][i] != self.last_date_record['CSV'][i]:
                         if (self.config['runD']): print(dt.datetime.now(),'两种文件最后日期不符，KDB最后日期：'+str(self.last_date_record['KDB'][i])+'; CSV最后日期: '+str(self.last_date_record['CSV'][i]) )
