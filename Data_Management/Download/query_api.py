@@ -65,7 +65,6 @@ class ts_api():
                 data = pd.merge(data, data_adj_factor, left_on='ts_code', right_on='ts_code', how='outer')
                 data[self.config['datetime_name']] = pd.to_datetime(data[self.config['datetime_name']])
                 data = data.set_index(self.config['datetime_name'])
-                data = data.dropna()
                 return data
 
             else: print('数据缺失: 代码: ' + str(ts_code))
