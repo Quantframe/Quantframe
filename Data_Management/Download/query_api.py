@@ -73,5 +73,4 @@ class ts_api():
     def get_fundamental(self,ts_code='',start_date='',end_date='',trade_date=''):
         data = self.api.daily_basic(ts_code=ts_code, start_date=start_date, end_date=end_date,trade_date=trade_date)
         data = data.set_index(pd.to_datetime(data[self.config['datetime_name']]))
-
         return data

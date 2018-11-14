@@ -106,6 +106,7 @@ class HDB_Core():
                                                         )
                 elif download_info[0] == 'Fundamental':
                     data_sub = self.ts_api.get_fundamental(ts_code=code,start_date=start_date,end_date='')
+                    print(data_sub)
                 count_steps += 1
                 if (type(data_sub)==pd.core.frame.DataFrame):
                     if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')

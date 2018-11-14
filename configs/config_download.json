@@ -41,7 +41,7 @@
 	"HDB_option":{	
 				"E":{
 						"whether_download":1,
-						"save_type":["OHLCV","Fundamental"],
+						"save_type":["OHLCV"],
 						"asset":["E"],
 						"adj":"None",
 						"freq":["D"],
