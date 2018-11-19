@@ -1,6 +1,4 @@
-
 #---------------------------------------------
-
 import qpython.qconnection as qp
 from qpython.qconnection import MessageType
 import pandas as pd
@@ -11,15 +9,23 @@ import json
 import re
 import os
 import sys
-#-------------------------------------------- load configs & add paths
-sys.path.append("D:\Quant\Local\Strategy\Big_Brain\Data_Management\Download")
-sys.path.append("D:\Quant\Local\Strategy\Big_Brain")
-sys.path.append("D:\Quant\Local\Strategy\Big_Brain\kdb_python")
+#-------------------------------------------- load configs
+'''
+此处可视情况更换参数
+'''
+path_configs = 'D:/Quant/Local/Strategy/Big_Brain/configs/'
+config_list = ['config_main','config_download','config_data_query','config_paths','config_GUI']
+
+for item in config_list:
+    with open (path_configs+item+'.json','r') as f: locals()[item] = json.loads(f.read())
+#-------------------------------------------- add local package paths
+for local_package_path in config_paths.keys():
+    local_package_path.replace('/','\\')
+    sys.path.append(config_paths[local_package_path])
 
 #--------------------------------------------
 import kdb_csv as kc
 import query_api
-
 #---------------------------------------------
 '''
 Notes:
@@ -30,7 +36,6 @@ Notes:
     3，HDB运行后会自动检查缺失数据并补充缺失数据
     4，HDB 开机时间应该在收盘半小时后，给RDB将数据存入HDB的时间
 '''
-with open('D:/Quant/Local/Strategy/Big_Brain/configs/config_download.json', 'r') as f: config_download = json.loads(f.read())
 
 class HDB_Core():
     def __init__(self,config_download):
@@ -106,7 +111,6 @@ class HDB_Core():
                                                         )
                 elif download_info[0] == 'Fundamental':
                     data_sub = self.ts_api.get_fundamental(ts_code=code,start_date=start_date,end_date='')
-                    print(data_sub)
                 count_steps += 1
                 if (type(data_sub)==pd.core.frame.DataFrame):
                     if (self.config['runD']): print(dt.datetime.now(), '加载完成：代码: ' + str(code) + '; 长度: '+ str(data_sub.shape[0]) +'进度: ' + str(count_steps * 100 / (len(code_list))) + '%;')
@@ -226,7 +230,7 @@ class HDB_Core():
         #'''
         #下载HDB
         #'''
-        self.download_intial_on = 1
+        self.update_on = 1  #download_intial_on则按code下载
         if len(set(self.initial_download_list)) > 0:
             for i in self.initial_download_list:
                 download_info = i.split('_')
@@ -282,8 +286,6 @@ if __name__ == "__main__":
     HDB_Core = HDB_Core(config_download)
     HDB_Core.reset_HDB_check()
     HDB_Core.check_HDB_update()
-    print(HDB_Core.last_date_record)
-    print('#######################')
     HDB_Core.update_HDB()
 
 

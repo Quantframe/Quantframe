@@ -38,27 +38,6 @@
 				"csv":"D:/Quant/Data/CSV/Local/"
 	},
 	
-	"HDB_option":{	
-				"E":{
-						"whether_download":1,
-						"save_type":["OHLCV","Fundamental"],
-						"asset":["E"],
-						"adj":"None",
-						"freq":["D"],
-						"start_date":20100101
-				},
-				"I":{
-						"whether_download":1,
-						"by":"index_name",
-						"save_type":["OHLCV"],
-						"index_market_list":["MSCI","CSI","SSE","SZSE","CICC","SW","CNI","OTH"],
-						"index_name":["000001.SH"],
-						"asset":["I"],
-						"adj":"None",
-						"freq":["D"],
-						"start_date":20100101
-				}
-	},
 	"datetime_name":"trade_date"
 	
 }

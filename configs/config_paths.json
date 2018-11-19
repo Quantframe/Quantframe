@@ -1,4 +1,6 @@
 {
 "Download":"D:/Quant/Local/Strategy/Big_Brain/Data_Management/Download",
-"main":"D:/Quant/Local/Strategy/Big_Brain"
+"main":"D:/Quant/Local/Strategy/Big_Brain",
+"kdb_python":"D:/Quant/Local/Strategy/Big_Brain/kdb_python",
+"Data_query":"D:/Quant/Local/Strategy/Big_Brain/Data_Management/Data_query"
 }

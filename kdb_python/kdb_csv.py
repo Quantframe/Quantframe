@@ -25,15 +25,7 @@ def load(config, read_name):
     return data
 
 def update(config,update_kdb,update_csv,last_date_record,name,new_data,reset_index=True,set_index=False,index_name='trade_date'):
-    # if update_kdb:
-    #     data = ksl.load_from_kdb(config, name)
-    #     data[index_name] += 946684800000000000
-    #     data[index_name] = pd.to_datetime(data[index_name])
-    #     data = data.set_index(index_name)
-    # if update_csv:
-    #     data = pd.read_csv(config['place_load']['csv']+name+'.csv')
-    #     data = data.set_index(index_name)
-    # new_data = new_data[new_data.index>=data.index.max()]
+
     if update_kdb:
         data_kdb_save = new_data[new_data.index>last_date_record['KDB'][name]]
         if data_kdb_save.shape[0]>0:
